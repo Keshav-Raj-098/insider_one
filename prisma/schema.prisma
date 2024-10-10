@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+
+model user {
+  id          String               @id @unique @default(uuid())
+  name        String?
+  email       String               @unique
+  password    String              
+  shorts      Short[]               
+  likes       Like[]                
+  comments    Comment[]
+}
+
+model admin {
+  id       String @id @unique @default(uuid())
+  username String @unique
+  password String
+}
+
+
+
+// Shorts
+
+
+model Short {
+  id          String    @id @unique @default(uuid())
+  title       String
+  description String
+  videoUrl    String
+  userId      String
+  createdAt   DateTime  @default(now())
+  likes       Like[]
+  comments    Comment[]
+  student     user   @relation(fields: [userId], references: [id])
+}
+
+model Like {
+  id         String    @id @unique @default(uuid())
+  createdAt  DateTime  @default(now())
+  userId     String
+  shortId    String
+  student    user      @relation(fields: [userId], references: [id]) // Relation to the Student model
+  short      Short     @relation(fields: [shortId], references: [id])
+
+  @@unique([userId, shortId]) // Ensures a student can like a short only once
+}
+
+model Comment {
+  id         String   @id @unique @default(uuid())
+  content    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  userId  String
+  shortId    String
+  student    user  @relation(fields: [userId], references: [id]) // Relation to the Student model
+  short      Short    @relation(fields: [shortId], references: [id])
+}
+
