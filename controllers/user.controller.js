@@ -5,7 +5,7 @@ import { ApiError } from "../utils/Apierror.js";
 const UserRegister = async (req, res) => {
 
     try {
-        console.log(req.body);
+      
 
         const user = await prisma.user.create(
             {
@@ -23,7 +23,7 @@ const UserRegister = async (req, res) => {
             console.error(400, "Server Busy can't register You")
         }
 
-        return res.json(new Apiresponse(200, user, "Registered Successfully"));
+        return res.json(new Apiresponse(200, user.id, "Registered Successfully"));
 
     } catch (error) {
         throw new ApiError(402, "Error in field");
